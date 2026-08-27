@@ -16,12 +16,15 @@ public class AuthEventPublisher {
     private static final String TOPIC = "auth.user.registered";
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    
 
     public AuthEventPublisher(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void publishOtpEvent(String userId, String email, String otp) {
+    public void publishOtpEvent(String userId, String email) {
+        // 2. Generar OTP seguro
+        String otp = generateSecureOtp(); 
         UserRegisteredEvent event = new UserRegisteredEvent(userId, email, otp);
         
         // userId as partition key
@@ -34,5 +37,9 @@ public class AuthEventPublisher {
                     log.error("Fallo al publicar el evento en Kafka para el usuario: {}", userId, ex);
                 }
             });
+    }
+
+    public String generateSecureOtp() {
+        return String.valueOf(100000 + new java.security.SecureRandom().nextInt(900000));
     }
 }

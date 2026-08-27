@@ -10,7 +10,6 @@ import java.util.Set;
 
 @Service
 public class EmailValidationService {
-
     // Lista negra de dominios de correos desechables comunes
     private static final Set<String> DISPOSABLE_DOMAINS = Set.of(
         "10minutemail.com", "tempmail.com", "guerrillamail.com", "yopmail.com", "trashmail.com"
@@ -28,8 +27,8 @@ public class EmailValidationService {
             return false;
         }
 
-        // 2. Verificación de registros DNS MX
-        return hasMxRecords(domain);
+        //TO-DO: to use hasMxRecords to verify mxRecords (probably to use factory pattern to validate multiple regions) 
+        return true;
     }
 
     private boolean hasMxRecords(String domain) {

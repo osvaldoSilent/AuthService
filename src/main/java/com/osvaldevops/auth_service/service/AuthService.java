@@ -27,7 +27,6 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final long accessTokenExpirationMs;
     private final EmailValidationService emailValidationService;
-    private final AuthEventPublisher authEventPublisher;
 
     public AuthService(
             UserRepository userRepository,
@@ -43,27 +42,25 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
         this.accessTokenExpirationMs = accessTokenExpirationMs;
         this.emailValidationService = emailValidationService;
-        this.authEventPublisher =authEventPublisher;
     }
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
-        System.out.println("entra");
+        if (userRepository.findByEmail(request.email()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "El email ya está registrado");
+        }
         boolean isEmailValid = emailValidationService.isEmailRealAndValid(request.email());
-        //if (!isEmailValid) {
-        //    throw new BusinessException(
-        //        "El correo proporcionado no es un correo válido o su dominio no puede recibir mensajes", 
-        //        HttpStatus.BAD_REQUEST
-        //    );
-        //}
-        System.out.println("entra22");
-        
+        if (!isEmailValid) {
+            throw new BusinessException(
+                "El correo proporcionado no es un correo válido o su dominio no puede recibir mensajes", 
+                HttpStatus.BAD_REQUEST
+            );
+        }
         // 1. Validar que el email no exista
-        //if (userRepository.existsByEmail(request.email())) {
+        if (userRepository.existsByEmail(request.email())) {
             // Lanza excepción que Spring Boot traducirá a RFC 7807 (Problem Details)
-            //throw new ResponseStatusException(HttpStatus.CONFLICT, "El email ya está registrado");
-        //}
-        System.out.println("entra 2");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "El email ya está registrado");
+        }
         var user = UserEntity.builder()
                 .user_name(request.user_name())
                 .email(request.email())
@@ -77,13 +74,6 @@ public class AuthService {
         var accessToken = jwtService.generateAccessToken(user.getEmail(), user.getRole().name());
         var refreshToken = jwtService.generateRefreshToken(user.getEmail());
         System.out.println("entra 4");
-        // 2. Generar OTP seguro
-        String otp = generateSecureOtp(); 
-
-        // 3. Publicar evento a Kafka (El Notification Worker lo consumirá)
-        System.out.println("enviando evento");
-        authEventPublisher.publishOtpEvent(user.getId().toString(), user.getEmail(), otp);
-
         return AuthResponse.of(accessToken, refreshToken, accessTokenExpirationMs);
     }
 
@@ -102,7 +92,5 @@ public class AuthService {
         return AuthResponse.of(accessToken, refreshToken, accessTokenExpirationMs);
     }
 
-    private String generateSecureOtp() {
-        return String.valueOf(100000 + new java.security.SecureRandom().nextInt(900000));
-    }
+    
 }

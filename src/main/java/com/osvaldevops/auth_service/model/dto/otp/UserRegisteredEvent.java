@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record UserRegisteredEvent(
     @JsonProperty("user_name")
-    String userId,
+    String user_name,
     String email,
     String otpCode,
     String createdAt    
