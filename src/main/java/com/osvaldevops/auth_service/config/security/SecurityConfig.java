@@ -29,7 +29,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 // Desactivar CSRF ya que usamos APIs REST Stateless con JWT
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer -> AbstractHttpConfigurer.disable())
                 
                 // Configurar políticas de sesión Stateless
                 .sessionManagement(session -> 
