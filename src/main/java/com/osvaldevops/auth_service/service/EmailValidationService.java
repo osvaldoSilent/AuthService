@@ -31,19 +31,19 @@ public class EmailValidationService {
         return true;
     }
 
-    private boolean hasMxRecords(String domain) {
-        try {
-            Hashtable<String, String> env = new Hashtable<>();
-            env.put("java.naming.factory.initial", "com.sun.jndi.dns.DNSContextFactory");
+    //private boolean hasMxRecords(String domain) {
+        //try {
+            //Hashtable<String, String> env = new Hashtable<>();
+            //env.put("java.naming.factory.initial", "com.sun.jndi.dns.DNSContextFactory");
             
-            DirContext ictx = new InitialDirContext(env);
-            Attributes attrs = ictx.getAttributes(domain, new String[]{"MX"});
-            Attribute attr = attrs.get("MX");
+            //DirContext ictx = new InitialDirContext(env);
+            //Attributes attrs = ictx.getAttributes(domain, new String[]{"MX"});
+            //Attribute attr = attrs.get("MX");
 
-            return (attr != null && attr.size() > 0);
-        } catch (Exception e) {
+            //return (attr != null && attr.size() > 0);
+        //} catch (Exception e) {
             // El dominio no existe o no tiene servidor de correo configurado
-            return false;
-        }
-    }
+            //return false;
+        //}
+    //}
 }

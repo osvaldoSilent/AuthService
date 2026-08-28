@@ -70,10 +70,8 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
-        System.out.println("entra 3");
         var accessToken = jwtService.generateAccessToken(user.getEmail(), user.getRole().name());
         var refreshToken = jwtService.generateRefreshToken(user.getEmail());
-        System.out.println("entra 4");
         return AuthResponse.of(accessToken, refreshToken, accessTokenExpirationMs);
     }
 
@@ -88,7 +86,6 @@ public class AuthService {
 
         var accessToken = jwtService.generateAccessToken(user.getEmail(), user.getRole().name());
         var refreshToken = jwtService.generateRefreshToken(user.getEmail());
-        System.out.println("PASA 3");
         return AuthResponse.of(accessToken, refreshToken, accessTokenExpirationMs);
     }
 
