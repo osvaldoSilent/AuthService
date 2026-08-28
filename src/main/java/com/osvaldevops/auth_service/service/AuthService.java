@@ -1,14 +1,15 @@
 package com.osvaldevops.auth_service.service;
  
 
-import com.osvaldevops.auth_service.model.enums.UserRole;
+import com.osvaldevops.auth_service.config.security.JwtService;
 import com.osvaldevops.auth_service.exception.BusinessException;
 import com.osvaldevops.auth_service.model.UserEntity;
-import com.osvaldevops.auth_service.model.dto.auth.AuthResponse;
-import com.osvaldevops.auth_service.model.dto.auth.LoginRequest;
-import com.osvaldevops.auth_service.model.dto.auth.RegisterRequest;
+import com.osvaldevops.auth_service.model.auth.dto.AuthResponse;
+import com.osvaldevops.auth_service.model.auth.dto.LoginRequest;
+import com.osvaldevops.auth_service.model.auth.dto.RegisterRequest;
+import com.osvaldevops.auth_service.model.auth.enums.UserRole;
 import com.osvaldevops.auth_service.repository.UserRepository;
-import com.osvaldevops.auth_service.config.JwtService;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +28,8 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final long accessTokenExpirationMs;
     private final EmailValidationService emailValidationService;
+    private final AuthEventPublisher authEventPublisher;
+
 
     public AuthService(
             UserRepository userRepository,
@@ -42,6 +45,7 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
         this.accessTokenExpirationMs = accessTokenExpirationMs;
         this.emailValidationService = emailValidationService;
+        this.authEventPublisher = authEventPublisher;
     }
 
     @Transactional
@@ -56,11 +60,6 @@ public class AuthService {
                 HttpStatus.BAD_REQUEST
             );
         }
-        // 1. Validar que el email no exista
-        if (userRepository.existsByEmail(request.email())) {
-            // Lanza excepción que Spring Boot traducirá a RFC 7807 (Problem Details)
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "El email ya está registrado");
-        }
         var user = UserEntity.builder()
                 .user_name(request.user_name())
                 .email(request.email())
@@ -72,6 +71,12 @@ public class AuthService {
         userRepository.save(user);
         var accessToken = jwtService.generateAccessToken(user.getEmail(), user.getRole().name());
         var refreshToken = jwtService.generateRefreshToken(user.getEmail());
+        try{
+            authEventPublisher.publishOtpEvent(request.user_name(), request.email());
+        }
+        catch(Exception e){
+            
+        }
         return AuthResponse.of(accessToken, refreshToken, accessTokenExpirationMs);
     }
 

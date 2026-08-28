@@ -1,4 +1,4 @@
-package com.osvaldevops.auth_service.model.dto.otp;
+package com.osvaldevops.auth_service.model.otp.dto;
 
 import java.time.Instant;
 

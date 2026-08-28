@@ -1,4 +1,4 @@
-package com.osvaldevops.auth_service.model.dto.auth;
+package com.osvaldevops.auth_service.model.auth.dto;
 
 public record AuthResponse(
     String accessToken,

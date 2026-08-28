@@ -1,4 +1,4 @@
-package com.osvaldevops.auth_service.config;
+package com.osvaldevops.auth_service.config.security;
 
 
 import io.jsonwebtoken.Claims;

@@ -1,4 +1,4 @@
-package com.osvaldevops.auth_service.config;
+package com.osvaldevops.auth_service.config.kafka;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;

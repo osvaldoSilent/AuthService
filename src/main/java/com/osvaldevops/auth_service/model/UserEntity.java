@@ -1,11 +1,12 @@
 package com.osvaldevops.auth_service.model;
 
-import com.osvaldevops.auth_service.model.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.osvaldevops.auth_service.model.auth.enums.UserRole;
 
 import java.time.OffsetDateTime;
 import java.util.Collection;
