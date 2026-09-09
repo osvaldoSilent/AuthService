@@ -1,4 +1,4 @@
-package com.osvaldevops.auth_service.service;
+package com.osvaldevops.auth_service.service.kafka;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +22,8 @@ public class AuthEventPublisher {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void publishOtpEvent(String userId, String email) {
-        // 2. Generar OTP seguro
-        String otp = generateSecureOtp(); 
-        UserRegisteredEvent event = new UserRegisteredEvent(userId, email, otp);
+    public void publishOtpEvent(String userId, String email, String otpCode) {
+        UserRegisteredEvent event = new UserRegisteredEvent(userId, email, otpCode);
         
         // userId as partition key
         kafkaTemplate.send(TOPIC, userId, event)
@@ -37,9 +35,5 @@ public class AuthEventPublisher {
                     log.error("Fallo al publicar el evento en Kafka para el usuario: {}", userId, ex);
                 }
             });
-    }
-
-    public String generateSecureOtp() {
-        return String.valueOf(100000 + new java.security.SecureRandom().nextInt(900000));
     }
 }

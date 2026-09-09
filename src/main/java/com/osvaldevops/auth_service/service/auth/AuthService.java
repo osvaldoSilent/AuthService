@@ -1,4 +1,4 @@
-package com.osvaldevops.auth_service.service;
+package com.osvaldevops.auth_service.service.auth;
  
 
 import com.osvaldevops.auth_service.config.security.JwtService;
@@ -7,6 +7,10 @@ import com.osvaldevops.auth_service.model.UserEntity;
 import com.osvaldevops.auth_service.model.auth.dto.AuthResponse;
 import com.osvaldevops.auth_service.model.auth.dto.LoginRequest;
 import com.osvaldevops.auth_service.model.auth.dto.RegisterRequest;
+import com.osvaldevops.auth_service.service.EmailValidationService;
+import com.osvaldevops.auth_service.service.kafka.AuthEventPublisher;
+import com.osvaldevops.auth_service.service.otp.OTPService;
+import com.osvaldevops.auth_service.service.redis.OtpRedisService;
 import com.osvaldevops.auth_service.model.auth.enums.UserRole;
 import com.osvaldevops.auth_service.repository.UserRepository;
 
@@ -29,7 +33,8 @@ public class AuthService {
     private final long accessTokenExpirationMs;
     private final EmailValidationService emailValidationService;
     private final AuthEventPublisher authEventPublisher;
-
+    private final OtpRedisService otpRedisService;
+    private final OTPService otpService;
 
     public AuthService(
             UserRepository userRepository,
@@ -37,8 +42,11 @@ public class AuthService {
             JwtService jwtService,
             AuthenticationManager authenticationManager,
             EmailValidationService emailValidationService,
+            OtpRedisService otpRedisService,
+            OTPService otpService,
             AuthEventPublisher authEventPublisher,
-            @Value("${security.jwt.access-token-expiration-ms}") long accessTokenExpirationMs) {
+            @Value("${security.jwt.access-token-expiration-ms}") long accessTokenExpirationMs
+        ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
@@ -46,6 +54,8 @@ public class AuthService {
         this.accessTokenExpirationMs = accessTokenExpirationMs;
         this.emailValidationService = emailValidationService;
         this.authEventPublisher = authEventPublisher;
+        this.otpRedisService = otpRedisService;
+        this.otpService = otpService;
     }
 
     @Transactional
@@ -71,8 +81,11 @@ public class AuthService {
         userRepository.save(user);
         var accessToken = jwtService.generateAccessToken(user.getEmail(), user.getRole().name());
         var refreshToken = jwtService.generateRefreshToken(user.getEmail());
+        var otpCode = otpService.generateSecureOtp();
+        otpRedisService.saveOtp(user.getEmail(), otpCode);
+
         try{
-            authEventPublisher.publishOtpEvent(request.user_name(), request.email());
+            authEventPublisher.publishOtpEvent(request.user_name(), request.email(), otpCode);
         }
         catch(Exception e){
             

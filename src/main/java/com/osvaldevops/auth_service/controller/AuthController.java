@@ -1,10 +1,11 @@
 package com.osvaldevops.auth_service.controller;
 
-import com.osvaldevops.auth_service.service.AuthService;
+import com.osvaldevops.auth_service.service.auth.AuthService;
+import com.osvaldevops.auth_service.service.kafka.AuthEventPublisher;
 import com.osvaldevops.auth_service.model.auth.dto.AuthResponse;
 import com.osvaldevops.auth_service.model.auth.dto.LoginRequest;
 import com.osvaldevops.auth_service.model.auth.dto.RegisterRequest;
-import com.osvaldevops.auth_service.service.AuthEventPublisher;
+
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
