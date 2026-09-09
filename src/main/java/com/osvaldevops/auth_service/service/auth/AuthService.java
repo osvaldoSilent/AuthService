@@ -7,10 +7,10 @@ import com.osvaldevops.auth_service.model.UserEntity;
 import com.osvaldevops.auth_service.model.auth.dto.AuthResponse;
 import com.osvaldevops.auth_service.model.auth.dto.LoginRequest;
 import com.osvaldevops.auth_service.model.auth.dto.RegisterRequest;
-import com.osvaldevops.auth_service.service.EmailValidationService;
 import com.osvaldevops.auth_service.service.kafka.AuthEventPublisher;
 import com.osvaldevops.auth_service.service.otp.OTPService;
 import com.osvaldevops.auth_service.service.redis.OtpRedisService;
+import com.osvaldevops.auth_service.service.util.EmailValidationService;
 import com.osvaldevops.auth_service.model.auth.enums.UserRole;
 import com.osvaldevops.auth_service.repository.UserRepository;
 

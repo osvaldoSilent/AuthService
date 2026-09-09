@@ -1,7 +1,10 @@
-package com.osvaldevops.auth_service.service;
+package com.osvaldevops.auth_service.service.util;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import lombok.NonNull;
+
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.InitialDirContext;
@@ -22,7 +25,7 @@ public class EmailValidationService {
         "10minutemail.com", "tempmail.com", "guerrillamail.com", "yopmail.com", "trashmail.com"
     );
 
-    public boolean isEmailRealAndValid(String email) {
+    public boolean isEmailRealAndValid(@NonNull String email) {
         boolean isEmailRealAndValid;
         if (email == null || !email.contains("@")) {
             isEmailRealAndValid = false;

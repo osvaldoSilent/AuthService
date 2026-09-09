@@ -6,6 +6,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.osvaldevops.auth_service.model.otp.dto.UserRegisteredEvent;
+import com.osvaldevops.auth_service.service.util.Encryption;
 
 
 @Service
@@ -16,13 +17,15 @@ public class AuthEventPublisher {
     private static final String TOPIC = "auth.user.registered";
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
-    
+    private final Encryption encryption;
 
-    public AuthEventPublisher(KafkaTemplate<String, Object> kafkaTemplate) {
+    public AuthEventPublisher(KafkaTemplate<String, Object> kafkaTemplate, Encryption encryption) {
         this.kafkaTemplate = kafkaTemplate;
+        this.encryption = encryption;
     }
 
     public void publishOtpEvent(String userId, String email, String otpCode) {
+        otpCode = encryption.encrypt(otpCode);
         UserRegisteredEvent event = new UserRegisteredEvent(userId, email, otpCode);
         
         // userId as partition key
