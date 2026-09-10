@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   # ==========================================
   # 1. KAFKA BROKER (Motor de Eventos)
@@ -43,3 +45,4 @@ services:
     ports:
       - "6379:6379"
     restart: unless-stopped
+  
